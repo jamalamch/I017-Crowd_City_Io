@@ -27,10 +27,10 @@ namespace UIParty
         {
             if (VisibilityStatus == WindowStatus.Closed)
             {
+                VisibilityStatus = WindowStatus.Opening;
                 gameObject.SetActive(true);
                 OnStartShowing();
                 ShowView();
-                VisibilityStatus = WindowStatus.Opening;
             }
         }
 
@@ -38,11 +38,11 @@ namespace UIParty
         {
             if (VisibilityStatus == WindowStatus.Opening || VisibilityStatus == WindowStatus.Opened)
             {
+                VisibilityStatus = WindowStatus.Closing;
                 _canvasGroup.interactable = false;
                 _canvasGroup.blocksRaycasts = false;
                 OnStarClosing();
                 CloseView();
-                VisibilityStatus = WindowStatus.Closing;
             }
         }
 
@@ -70,6 +70,7 @@ namespace UIParty
         protected void FinClose()
         {
             _canvasGroup.interactable = false;
+            _canvasGroup.blocksRaycasts = true;
             gameObject.SetActive(false);
             OnFinishClosing();
             m_onFinishClosing?.Invoke(this);

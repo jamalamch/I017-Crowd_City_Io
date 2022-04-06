@@ -59,6 +59,11 @@ namespace UIParty
             _loseWindow.Open();
         }
 
+        public void FullSplashScreenOpeen()
+        {
+            _transitionWindow.Open();
+        }
+
         private void FullSplashScreen()
         {
             Root.TransitionScreenFull();

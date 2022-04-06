@@ -58,22 +58,28 @@ public class Root : MonoBehaviour
 
     internal static void LevelWon(int levelGain)
     {
+        Debug.Log("Level Win" + levelGain);
         UIManager.OpenWinWindow();
     }
 
     public static void LevelWonClosed()
     {
+        Debug.Log("LevelUp");
         Level.LevelUp();
+        UIManager.FullSplashScreenOpeen();
     }
 
     internal static void LevelLost(int levelGain)
     {
+        Debug.Log("Level Lose" + levelGain);
         UIManager.OpenLoseWindow();
     }
 
     public static void LevelLoseClosed()
     {
+        Debug.Log("Level Restry");
         Level.SetProgression(0);
+        UIManager.FullSplashScreenOpeen();
     }
 
     public static void ChangeLevel()
