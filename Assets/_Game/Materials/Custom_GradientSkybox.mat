@@ -22,9 +22,9 @@ Material:
     m_Floats:
     - _Exponent: 1
     - _Horizon: 1
-    - _HorizonSize: 0
-    - _Intensity: 1
+    - _HorizonSize: 0.568
+    - _Intensity: 0.676
     m_Colors:
-    - _Color1: {r: 1, g: 1, b: 1, a: 0}
-    - _Color2: {r: 1, g: 1, b: 1, a: 0}
+    - _Color1: {r: 0.7830189, g: 0.76455146, b: 0.76455146, a: 0}
+    - _Color2: {r: 0.2783019, g: 0.44528306, b: 1, a: 1}
   m_BuildTextureStacks: []
