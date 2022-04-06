@@ -19,6 +19,7 @@ namespace UIParty
             Precondition.CheckNotNull(callback);
             
             _button.onClick.AddListener(() => callback());
+            _button.onClick.AddListener(() => { AudioManager.Play("Click"); });
         }
     }
 }
