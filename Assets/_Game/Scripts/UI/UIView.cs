@@ -1,62 +1,80 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace UIParty
 {
     public abstract class UIView : MonoBehaviour
     {
-        [SerializeField]
-        private BaseUITransitionAnimation m_transitioner;
-
         private Action<UIView> m_onFinishClosing;
         private Action<UIView> m_onFinishShowing;
+        [SerializeField, Required, BoxGroup("Window")] protected CanvasGroup _canvasGroup = null;
 
-        public void ShowView()
+        private bool _interactable = false;
+
+        public WindowStatus VisibilityStatus { get; private set; }
+
+        public virtual void Init()
         {
-            gameObject.SetActive(true);
-            OnStartShowing();
+            _interactable = _canvasGroup.interactable;
+            _canvasGroup.interactable = false;
+            gameObject.SetActive(false);
+            VisibilityStatus = WindowStatus.Closed;
+        }
 
-            if (m_transitioner != null)
+
+        public void Open()
+        {
+            if (VisibilityStatus == WindowStatus.Closed)
             {
-                m_transitioner.PlayIntroAnimation((interrupted) =>
-                {
-                    OnFinishShowing();
-                    m_onFinishShowing?.Invoke(this);
-                });
-            }
-            else
-            {
-                OnFinishShowing();
-                m_onFinishShowing?.Invoke(this);
+                gameObject.SetActive(true);
+                OnStartShowing();
+                ShowView();
+                VisibilityStatus = WindowStatus.Opening;
             }
         }
 
-        public void CloseView()
+        public void Close()
         {
-            OnStarClosing();
-
-            if (m_transitioner != null)
+            if (VisibilityStatus == WindowStatus.Opening || VisibilityStatus == WindowStatus.Opened)
             {
-                m_transitioner.PlayCloseAnimation((interrupted) =>
-                {
-                    OnFinishClosing();
-                    m_onFinishClosing?.Invoke(this);
-                    gameObject.SetActive(false);
-                });
-            }
-            else
-            {
-                OnFinishClosing();
-                m_onFinishClosing?.Invoke(this);
-                gameObject.SetActive(false);
+                _canvasGroup.interactable = false;
+                _canvasGroup.blocksRaycasts = false;
+                OnStarClosing();
+                CloseView();
+                VisibilityStatus = WindowStatus.Closing;
             }
         }
 
-        public void UpdateView()
+
+        protected virtual void ShowView()
         {
-            OnUpdate();
+            FinShow();
+        }
+
+        protected virtual void CloseView()
+        {
+            FinClose();
+        }
+
+        protected void FinShow()
+        {
+            _canvasGroup.interactable = _interactable;
+
+            OnFinishShowing();
+            m_onFinishShowing?.Invoke(this);
+
+            VisibilityStatus = WindowStatus.Opened;
+        }
+
+        protected void FinClose()
+        {
+            _canvasGroup.interactable = false;
+            gameObject.SetActive(false);
+            OnFinishClosing();
+            m_onFinishClosing?.Invoke(this);
+
+            VisibilityStatus = WindowStatus.Closed;
         }
 
         public void RegisterOnFinishClosing(Action<UIView> onFinishClosing)
@@ -75,8 +93,6 @@ namespace UIParty
             m_onFinishShowing = null;
         }
 
-        protected virtual void OnUpdate() { }
-
         protected virtual void OnStartShowing() { }
 
         protected virtual void OnFinishShowing() { }
@@ -86,6 +102,8 @@ namespace UIParty
         protected virtual void OnFinishClosing() { }
 
     }
+
+    public enum WindowStatus { Opening, Opened, Closing, Closed };
 
 }
 
