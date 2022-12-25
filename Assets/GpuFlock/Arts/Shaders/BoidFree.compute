@@ -11,16 +11,15 @@ struct Boid
 {
 	float3 pos;
 	float3 rot;
-	float3 flockPos;
-	float speed;
-	float nearbyDis;
+	float deg;
+	float noise;
 };
 
 RWStructuredBuffer<Boid> boidBuffer;
 Texture2D<float4> grids;
+Texture2D<float4> noise;
 
 float deltaTime;
-float boidsCount;
 
 int cols;
 int rows;
@@ -32,56 +31,15 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	Boid boid = boidBuffer[id.x];
 	float3 pos = boid.pos;
 	float3 rot = boid.rot;
+	boid.noise += 10*deltaTime;
 
-	//separation
-	float3 separation = float3(0.0, 0.0, 0.0);
+	boid.deg += (noise[float2(fmod(boid.noise,256), fmod((boid.noise / 256) , 256))].x - 0.4518434) * 0.02;
 
-	//alignment
-	float3 alignment = float3(0.0, 0.0, 0.0);
+	float3 direction = float3(cos(boid.deg),0,sin(boid.deg));
 
-	//cohesion
-	float3 cohesion = boid.flockPos;
-	//float3 tempCohesion = float3(0.0, 0.0, 0.0);
+	boid.rot = direction;
 
-    float tempSpeed = 0;
-	uint nearbyCount = 0;
-
-	float ds = length(boid.pos.xz - boid.flockPos.xz);
-
-	[loop]
-	for (int i = 0; i < int(boidsCount); i++)
-	{
-		if (i != int(id.x))
-		{
-			Boid tempBoid = boidBuffer[i];
-			if (length(boid.pos - tempBoid.pos) < boid.nearbyDis)
-			{
-				if (ds > length(tempBoid.pos.xz - boid.flockPos.xz)) {
-					separation += boid.pos - tempBoid.pos;
-
-					//alignment += tempBoid.rot;
-
-					//tempCohesion += tempBoid.pos;
-
-					nearbyCount++;
-				}
-			}
-		}
-	}
-
-	//if (nearbyCount > 0)
-	//{
-	//	alignment *= 1 / nearbyCount;
-	//	tempCohesion *= 1 / nearbyCount;
-	//}
-
-	float3 direction = alignment + separation + normalize(cohesion - boid.pos);
-
-	//if (ds < 1)
-	//	boid.speed = 0;
-	boid.rot = lerp(boid.rot, normalize(direction), deltaTime * 4);
-
-	float3 targPos = boid.pos + boid.rot * boid.speed * deltaTime;
+	float3 targPos = boid.pos + boid.rot * 10 * deltaTime;
 
 	int gridX = floor(targPos.x / 50.0);
 	int gridY = floor(targPos.z / 50.0);

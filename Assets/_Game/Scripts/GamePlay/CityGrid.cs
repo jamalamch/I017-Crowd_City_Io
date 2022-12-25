@@ -12,6 +12,8 @@ public class CityGrid : MonoBehaviour
     [SerializeField] GameObject _cube;
     [SerializeField] Player _player;
 
+    Texture2D _texture2D;
+
     void Start()
     {
         for (int i = 0; i < matrix.cols; i++)
@@ -59,7 +61,11 @@ public class CityGrid : MonoBehaviour
 
     internal Texture2D GeTextureArray()
     {
-        Texture2D texture2D = new Texture2D(matrix.cols, matrix.rows, TextureFormat.RGBA32, false);
+        if (_texture2D)
+            return _texture2D;
+
+
+        _texture2D = new Texture2D(matrix.cols, matrix.rows, TextureFormat.RGBA32, false);
 
         Color one = new Color(1, 1, 1, 1);
         Color zero = new Color(0, 0, 0, 0);
@@ -68,11 +74,11 @@ public class CityGrid : MonoBehaviour
         {
             for (int j = 0; j < matrix.rows; j++)
             {
-                texture2D.SetPixel(i,j,matrix[i,j]? one: zero);
+                _texture2D.SetPixel(i,j,matrix[i,j]? one: zero);
             }
         }
-        texture2D.Apply();
-        return texture2D;
+        _texture2D.Apply();
+        return _texture2D;
     }
 
     Vector3 GetPosition(int i, int j) => new Vector3(i * gridSize, 0, j * gridSize);

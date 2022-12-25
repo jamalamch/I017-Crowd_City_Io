@@ -25,6 +25,7 @@ public class Crowd : MonoBehaviour
     public void Collect(FreeBrid freeBrid)
     {
         freeBrid.Free(false);
+        FreeBridSpawner.instance.RemovedBrid(freeBrid);
         GPUBoid gPUBoid = gPUFlockBrid.CreateBoidDataAtPosition(freeBrid.transform.position);
         gPUFlockBrid.AddBoidsGo(gPUBoid, freeBrid);
         ResetSphereColliderRaduis();
@@ -40,7 +41,7 @@ public class Crowd : MonoBehaviour
         _sphereCollider.transform.position = gPUFlockBrid.centreBoids;
     }
 
-    void ResetSphereColliderRaduis() => _sphereCollider.radius = Math.Interpolation(10, 7f, 1000, 36.5f, count);
+    void ResetSphereColliderRaduis() => _sphereCollider.radius = Math.Interpolation(10, 10f, 1000, 40, count);
 
     private void OnTriggerEnter(Collider other)
     {

@@ -459,7 +459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initOnStart: 1
-  count: 10
+  count: 500
   gPUFlockBrid: {fileID: 1618624793}
   _sphereCollider: {fileID: 2090827368}
   _rbSpeed: 10
@@ -930,14 +930,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1022589929}
-  m_LocalRotation: {x: 0.3773799, y: -0.15327914, z: 0.0634903, w: 0.9110757}
+  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
   m_LocalPosition: {x: 520.74, y: 47.4, z: 214.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 800622662}
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 45, y: -19.1, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
 --- !u!1 &1069205210
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,7 +1142,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1211615680}
-  m_LocalRotation: {x: 0.3773799, y: -0.15327914, z: 0.0634903, w: 0.9110757}
+  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
   m_LocalPosition: {x: 520.74, y: 47.4, z: 214.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1298,7 +1298,7 @@ MonoBehaviour:
     type: 3}
   _cityGrid: {fileID: 974509746}
   _timeToSpwan: 0.1
-  _targetCount: 50
+  _targetCount: 5
   _spawnRadius: 100
 --- !u!4 &1745498079
 Transform:

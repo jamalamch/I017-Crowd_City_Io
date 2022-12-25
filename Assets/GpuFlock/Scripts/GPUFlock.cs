@@ -61,6 +61,7 @@ public class GPUFlock : MonoBehaviour {
         cshader.SetInt("rows", rows);
         cshader.SetInt("cols", cols);
         cshader.SetFloat("gridSize", gridSize);
+        cshader.SetFloat("boidsCount", boidsCount);
 
         rawTexture.texture = gridMapArray;
     }
@@ -104,7 +105,6 @@ public class GPUFlock : MonoBehaviour {
 
         cshader.SetBuffer(_kernelHandle, "boidBuffer", buffer);
         cshader.SetFloat("deltaTime", Time.deltaTime);
-        cshader.SetFloat("boidsCount", boidsCount);
         cshader.Dispatch(_kernelHandle, this.boidsCount, 1, 1);
 
         buffer.GetData(_boidsData);

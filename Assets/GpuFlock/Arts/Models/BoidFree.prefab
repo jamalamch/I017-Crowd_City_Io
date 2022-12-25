@@ -97,7 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rbSpeed: 10
   _noiseSteep: 0.1
-  _noiseMagh: 1
+  _noiseMagh: 0.1
   _collider: {fileID: 5774359432760090463}
   _meshRenderer: {fileID: 23047006713883184}
   _freeMatrila: {fileID: 2100000, guid: fe719eb13715b4866b79fcec962df87f, type: 2}
