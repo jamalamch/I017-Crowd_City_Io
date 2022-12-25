@@ -17,9 +17,14 @@ struct Boid
 };
 
 RWStructuredBuffer<Boid> boidBuffer;
+Texture2D<float4> grids;
+
 float deltaTime;
 float boidsCount;
 
+int cols;
+int rows;
+float gridSize;
 
 [numthreads(128,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
@@ -76,7 +81,25 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 	//	boid.speed = 0;
 	boid.rot = lerp(boid.rot, normalize(direction), deltaTime * 4);
 
-	boid.pos += boid.rot * boid.speed * deltaTime;
+	float3 targPos = boid.pos + boid.rot * boid.speed * deltaTime;
 
+	int gridX = floor(targPos.x / 50.0);
+	int gridY = floor(targPos.z / 50.0);
+	if (grids[float2(gridX, gridY)].z == 0)
+		boid.pos = targPos;
+	else {
+		float3 maxPosition = float3(gridX*50,0, gridY*50);
+		if (maxPosition.x < targPos.x && maxPosition.x >= boid.pos.x)
+			targPos.x = maxPosition.x;
+		else if((maxPosition.x + 50)> targPos.x && (maxPosition.x + 50) <= boid.pos.x)
+			targPos.x = max(maxPosition.x + 50, targPos.x);
+
+		if (maxPosition.z < targPos.z && maxPosition.z >= boid.pos.z)
+			targPos.z = min(maxPosition.z, targPos.z);
+		if((maxPosition.z + 50) > targPos.z && (maxPosition.z + 50) <= boid.pos.z)
+			targPos.z = max(maxPosition.z + 50, targPos.z);
+
+		boid.pos = targPos;
+	}
 	boidBuffer[id.x] = boid;
 }

@@ -24,10 +24,9 @@ public class Crowd : MonoBehaviour
 
     public void Collect(FreeBrid freeBrid)
     {
-        freeBrid.tag = "Brid";
+        freeBrid.Free(false);
         GPUBoid gPUBoid = gPUFlockBrid.CreateBoidDataAtPosition(freeBrid.transform.position);
-        gPUFlockBrid.AddBoidsGo(gPUBoid, freeBrid.gameObject);
-        Destroy(freeBrid);
+        gPUFlockBrid.AddBoidsGo(gPUBoid, freeBrid);
         ResetSphereColliderRaduis();
     }
 

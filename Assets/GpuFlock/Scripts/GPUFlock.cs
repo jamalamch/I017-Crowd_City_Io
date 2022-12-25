@@ -5,7 +5,7 @@
 //
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GPUFlock : MonoBehaviour {
@@ -13,8 +13,7 @@ public class GPUFlock : MonoBehaviour {
     #region Fields
 
     [SerializeField] private ComputeShader cshader;
-    [SerializeField] private GameObject boidPrefab;
-    [SerializeField] private List<GameObject> boidsGo;
+    [SerializeField] private List<FreeBrid> boidsGo;
     [SerializeField] private int boidsCount;
     [SerializeField] private float spawnRadius;
     [SerializeField] private float flockSpeed;
@@ -24,7 +23,9 @@ public class GPUFlock : MonoBehaviour {
     private int _kernelHandle;
 
     private Vector3 _centre;
+    Texture2D gridMapArray;
 
+    [SerializeField] RawImage rawTexture;
     public Vector3 centreBoids => _centre;
 
     #endregion
@@ -34,27 +35,44 @@ public class GPUFlock : MonoBehaviour {
     public void FirstSpawn(int firstCount)
     {
         this.boidsCount = firstCount;
-        boidsGo = new List<GameObject>(boidsCount);
+        boidsGo = new List<FreeBrid>(boidsCount);
         _boidsData = new GPUBoid[boidsCount];
         _kernelHandle = cshader.FindKernel("CSMain");
 
         for (var i = 0; i < boidsCount; i++)
         {
             _boidsData[i] = CreateBoidData();
-            GameObject boidGo = Instantiate(boidPrefab, _boidsData[i].pos, Quaternion.Euler(_boidsData[i].rot)) as GameObject;
-            _boidsData[i].rot = boidGo.transform.forward;
-            boidsGo.Add(boidGo);
+            FreeBrid freeBrid = FreeBridSpawner.instance.poolBrid.Pick();
+            freeBrid.Free(false);
+            freeBrid.transform.SetPositionAndRotation(_boidsData[i].pos, Quaternion.Euler(_boidsData[i].rot));
+            _boidsData[i].rot = freeBrid.transform.forward;
+            boidsGo.Add(freeBrid);
         }
-
         enabled = true;
+
+        CityGrid cityGrid = FreeBridSpawner.instance.grid;
+
+        gridMapArray = cityGrid.GeTextureArray();
+        int rows = cityGrid.matrix.rows;
+        int cols = cityGrid.matrix.cols;
+        float gridSize = cityGrid.gridSize;
+
+        cshader.SetTexture(_kernelHandle, "grids", gridMapArray);
+        cshader.SetInt("rows", rows);
+        cshader.SetInt("cols", cols);
+        cshader.SetFloat("gridSize", gridSize);
+
+        rawTexture.texture = gridMapArray;
     }
 
-    public void AddBoidsGo(GPUBoid gPUBoid,GameObject boidGo)
+    public void AddBoidsGo(GPUBoid gPUBoid,FreeBrid boidGo)
     {
         boidsGo.Add(boidGo);
         System.Array.Resize(ref _boidsData, _boidsData.Length + 1);
         _boidsData[_boidsData.Length - 1] = gPUBoid;
         boidsCount++;
+
+        cshader.SetFloat("boidsCount", boidsCount);
     }
 
     private GPUBoid CreateBoidData()
@@ -77,7 +95,6 @@ public class GPUFlock : MonoBehaviour {
     private void Update()
     {
         var buffer = new ComputeBuffer(boidsCount, 44);
-
         for (int i = 0; i < _boidsData.Length; i++)
         {
             _boidsData[i].flockPos = this.transform.position;
@@ -88,7 +105,6 @@ public class GPUFlock : MonoBehaviour {
         cshader.SetBuffer(_kernelHandle, "boidBuffer", buffer);
         cshader.SetFloat("deltaTime", Time.deltaTime);
         cshader.SetFloat("boidsCount", boidsCount);
-
         cshader.Dispatch(_kernelHandle, this.boidsCount, 1, 1);
 
         buffer.GetData(_boidsData);
@@ -99,7 +115,7 @@ public class GPUFlock : MonoBehaviour {
         for (int i = 0; i < _boidsData.Length; i++)
         {
             _centre += _boidsData[i].pos;
-            boidsGo[i].transform.localPosition = _boidsData[i].pos;
+            boidsGo[i].transform.position = _boidsData[i].pos;
 
             if (!_boidsData[i].rot.Equals(Vector3.zero))
             {
