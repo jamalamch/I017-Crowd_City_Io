@@ -48,6 +48,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
 	float ds = length(boid.pos.xz - boid.flockPos.xz);
 
+	if(ds < boid.nearbyDis)
+		separation += boid.pos - boid.flockPos;
+
 	[loop]
 	for (int i = 0; i < int(boidsCount); i++)
 	{
@@ -58,8 +61,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 			{
 				if (ds > length(tempBoid.pos.xz - boid.flockPos.xz)) {
 					separation += boid.pos - tempBoid.pos;
-
-					//alignment += tempBoid.rot;
+					alignment += tempBoid.rot;
 
 					//tempCohesion += tempBoid.pos;
 
@@ -69,11 +71,10 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 		}
 	}
 
-	//if (nearbyCount > 0)
-	//{
-	//	alignment *= 1 / nearbyCount;
-	//	tempCohesion *= 1 / nearbyCount;
-	//}
+	if (nearbyCount > 0)
+	{
+		alignment *= 1 / nearbyCount;
+	}
 
 	float3 direction = alignment + separation + normalize(cohesion - boid.pos);
 
@@ -85,7 +86,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
 	int gridX = floor(targPos.x / 50.0);
 	int gridY = floor(targPos.z / 50.0);
-	if (gridX > 0 && gridX < 20 && gridY > 0 && gridY < 20) {
+	if (gridX >= 0 && gridX < 20 && gridY >= 0 && gridY < 20) {
 		if (grids[float2(gridX, gridY)].z == 0)
 			boid.pos = targPos;
 		else {

@@ -81,8 +81,8 @@ public class CityGrid : MonoBehaviour
         return _texture2D;
     }
 
-    Vector3 GetPosition(int i, int j) => new Vector3(i * gridSize, 0, j * gridSize);
-    (int,int) GetCellIndex(Vector3 position)
+    public Vector3 GetPosition(int i, int j) => new Vector3(i * gridSize, 0, j * gridSize);
+    public (int,int) GetCellIndex(Vector3 position)
     {
         int i = (int)(position.x / gridSize);
         int j = (int)(position.z / gridSize);

@@ -58,8 +58,18 @@ public class FreeBridSpawner : MonoBehaviour
         {
             FreeBrid freeBrid = poolBrid.Pick();
 
-            var pos = transform.position + Random.insideUnitSphere * _spawnRadius;
-            pos.y = 0;
+            int rX = Random.Range(0, _cityGrid.matrix.cols);
+            int rY = Random.Range(0, _cityGrid.matrix.rows);
+
+            while (_cityGrid.matrix[rX,rY])
+            {
+                rX = Random.Range(0, _cityGrid.matrix.cols);
+                rY = Random.Range(0, _cityGrid.matrix.rows);
+            }
+
+            Vector3 Rpo = _cityGrid.GetPosition(rX, rY);
+
+            var pos = new Vector3(Rpo.x + Random.value * _cityGrid.gridSize, 0, Rpo.z + Random.value * _cityGrid.gridSize);
             GPUFreeBoid gPUFree = CreateBoidDataAtPosition(pos);
             freeBrid.transform.position = pos;
             freeBrid.transform.rotation = Quaternion.LookRotation(gPUFree.rot);

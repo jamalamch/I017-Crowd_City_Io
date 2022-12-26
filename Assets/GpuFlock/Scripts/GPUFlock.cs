@@ -11,10 +11,10 @@ using Random = UnityEngine.Random;
 public class GPUFlock : MonoBehaviour {
 
     #region Fields
+    [SerializeField] public List<FreeBrid> boidsGo;
 
     [SerializeField] private ComputeShader cshader;
-    [SerializeField] private List<FreeBrid> boidsGo;
-    [SerializeField] private int boidsCount;
+    [SerializeField] private int _boidsCount;
     [SerializeField] private float spawnRadius;
     [SerializeField] private float flockSpeed;
     [SerializeField] private float nearbyDis;
@@ -27,6 +27,7 @@ public class GPUFlock : MonoBehaviour {
 
     [SerializeField] RawImage rawTexture;
     public Vector3 centreBoids => _centre;
+    public int boidsCount => _boidsCount;
 
     #endregion
 
@@ -34,7 +35,7 @@ public class GPUFlock : MonoBehaviour {
 
     public void FirstSpawn(int firstCount)
     {
-        this.boidsCount = firstCount;
+        _boidsCount = firstCount;
         boidsGo = new List<FreeBrid>(boidsCount);
         _boidsData = new GPUBoid[boidsCount];
         _kernelHandle = cshader.FindKernel("CSMain");
@@ -71,7 +72,7 @@ public class GPUFlock : MonoBehaviour {
         boidsGo.Add(boidGo);
         System.Array.Resize(ref _boidsData, _boidsData.Length + 1);
         _boidsData[_boidsData.Length - 1] = gPUBoid;
-        boidsCount++;
+        _boidsCount++;
 
         cshader.SetFloat("boidsCount", boidsCount);
     }

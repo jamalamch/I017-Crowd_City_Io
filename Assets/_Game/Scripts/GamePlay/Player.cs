@@ -7,7 +7,6 @@ public class Player : Crowd
     [SerializeField] float _rbSpeed = 0.5f;
 
     TouchPad _touchPad;
-    bool _canMove = true;
 
     public override void Init()
     {

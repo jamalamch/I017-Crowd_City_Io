@@ -43,7 +43,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
 	int gridX = floor(targPos.x / 50.0);
 	int gridY = floor(targPos.z / 50.0);
-	if (gridX > 0 && gridX < 20 && gridY > 0 && gridY < 20) {
+	if (gridX >= 0 && gridX < 20 && gridY >= 0 && gridY < 20) {
 		if (grids[float2(gridX, gridY)].z == 0)
 			boid.pos = targPos;
 		else {
