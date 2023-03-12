@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 public class RemoveMissingScripts : Editor
@@ -14,3 +15,4 @@ public class RemoveMissingScripts : Editor
     }
 }
 
+#endif

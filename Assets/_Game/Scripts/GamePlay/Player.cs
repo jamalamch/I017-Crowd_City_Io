@@ -8,10 +8,14 @@ public class Player : Crowd
 
     TouchPad _touchPad;
 
+    Vector3 _normal;
+
     public override void Init()
     {
         base.Init();
         _touchPad = TouchPad.instance;
+
+        _normal = Vector3.forward;
     }
 
     void Update()
@@ -26,9 +30,11 @@ public class Player : Crowd
     {
         if (_touchPad.velocityDirection.magnitude > Mathf.Epsilon)
         {
-            Vector3 newForward = Quaternion.Euler(0, 45, 0) * _touchPad.velocityDirection;
-            transform.forward = Vector3.Lerp(transform.forward, newForward, 0.5f);
-            transform.position = transform.position + newForward * _rbSpeed * Time.deltaTime;
+            _normal = _touchPad.velocityDirection.normalized;
         }
+
+        Vector3 newForward = Quaternion.Euler(0, 45, 0) * _normal;
+        transform.forward = Vector3.Lerp(transform.forward, newForward, 0.5f);
+        transform.position = transform.position + newForward * _rbSpeed * Time.deltaTime;
     }
 }

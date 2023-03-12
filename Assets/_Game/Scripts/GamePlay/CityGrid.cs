@@ -16,17 +16,17 @@ public class CityGrid : MonoBehaviour
 
     void Start()
     {
-        for (int i = 0; i < matrix.cols; i++)
-        {
-            for (int j = 0; j < matrix.rows; j++)
-            {
-                if (matrix[i, j])
-                {
-                    GameObject cube = Instantiate(_cube, transform);
-                    cube.transform.position = GetPosition(i, j) + Vector3.one * gridSize * 0.5f;
-                }
-            }
-        }
+        //for (int i = 0; i < matrix.cols; i++)
+        //{
+        //    for (int j = 0; j < matrix.rows; j++)
+        //    {
+        //        if (matrix[i, j])
+        //        {
+        //            GameObject cube = Instantiate(_cube, transform);
+        //            cube.transform.position = GetPosition(i, j) + Vector3.one * gridSize * 0.5f;
+        //        }
+        //    }
+        //}
     }
 
     public int[] GetIntArray()

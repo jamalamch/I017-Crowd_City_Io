@@ -9,7 +9,7 @@ public class Crowd : MonoBehaviour
     public int startCount;
     public GPUFlock gPUFlockBrid;
     [SerializeField] SphereCollider _sphereCollider;
-
+    [SerializeField] Material _bridMatrial;
     protected bool _onFight;
     protected bool _canMove = true;
 
@@ -24,6 +24,11 @@ public class Crowd : MonoBehaviour
     public virtual void Init()
     {
         gPUFlockBrid.FirstSpawn(startCount);
+
+        foreach (var item in gPUFlockBrid.boidsGo)
+        {
+            item.SetMaterial(_bridMatrial);
+        }
         ResetSphereColliderRaduis();
     }
 
@@ -31,12 +36,9 @@ public class Crowd : MonoBehaviour
     {
         if (gPUFlockBrid.enabled)
         {
-            freeBrid.Free(false);
             FreeBridSpawner.instance.RemovedBrid(freeBrid);
-            GPUBoid gPUBoid = gPUFlockBrid.CreateBoidDataAtPosition(freeBrid.transform.position);
-            gPUFlockBrid.AddBoidsGo(gPUBoid, freeBrid);
-            ResetSphereColliderRaduis();
-
+            CollectFrom(freeBrid);
+            freeBrid.SetMaterial(_bridMatrial);
         }
     }
 
@@ -59,6 +61,9 @@ public class Crowd : MonoBehaviour
                 {
                     CollectFrom(item);
                 }
+
+                StartCoroutine(EnumeratorAddCrowd(crowd.gPUFlockBrid.boidsGo));
+
                 _onFight = false;
             }
             else
@@ -67,6 +72,15 @@ public class Crowd : MonoBehaviour
                 gPUFlockBrid.enabled = false;
                 Destroy(gameObject, 0.5f);
             }
+        }
+    }
+
+    IEnumerator EnumeratorAddCrowd(List<FreeBrid> freeBrid)
+    {
+        foreach (var item in freeBrid)
+        {
+            yield return new WaitForSeconds(0.1f);
+            item.SetMaterial(_bridMatrial);
         }
     }
 

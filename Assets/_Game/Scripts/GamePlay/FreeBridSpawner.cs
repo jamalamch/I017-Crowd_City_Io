@@ -22,13 +22,13 @@ public class FreeBridSpawner : MonoBehaviour
 
     float _timer;
     int _count;
+    bool _enableCShader = true;
 
     public IPool<FreeBrid> poolBrid { get; set;}
     public CityGrid grid => _cityGrid;
     void Awake()
     {
         instance = this;
-        Application.targetFrameRate = 60;
         poolBrid = new PoolImpl<FreeBrid>(_freeBridGenerator, 50, this);
 
         _boidsFree = new List<FreeBrid>();
@@ -79,19 +79,22 @@ public class FreeBridSpawner : MonoBehaviour
 
         _count = firstCount;
 
-        _kernelHandle = cshader.FindKernel("CSMain");
+        if (_enableCShader)
+        {
+            _kernelHandle = cshader.FindKernel("CSMain");
 
-        CityGrid cityGrid = grid;
-        Texture gridMapArray = cityGrid.GeTextureArray();
-        int rows = cityGrid.matrix.rows;
-        int cols = cityGrid.matrix.cols;
-        float gridSize = cityGrid.gridSize;
+            CityGrid cityGrid = grid;
+            Texture gridMapArray = cityGrid.GeTextureArray();
+            int rows = cityGrid.matrix.rows;
+            int cols = cityGrid.matrix.cols;
+            float gridSize = cityGrid.gridSize;
 
-        cshader.SetTexture(_kernelHandle, "grids", gridMapArray);
-        cshader.SetTexture(_kernelHandle, "noise", noiseTexture);
-        cshader.SetInt("rows", rows);
-        cshader.SetInt("cols", cols);
-        cshader.SetFloat("gridSize", gridSize);
+            cshader.SetTexture(_kernelHandle, "grids", gridMapArray);
+            cshader.SetTexture(_kernelHandle, "noise", noiseTexture);
+            cshader.SetInt("rows", rows);
+            cshader.SetInt("cols", cols);
+            cshader.SetFloat("gridSize", gridSize);
+        }
     }
 
     public void AddNewBrid()
@@ -150,6 +153,9 @@ public class FreeBridSpawner : MonoBehaviour
 
         //   }
         //}
+
+        if (!_enableCShader)
+            return;
 
         var buffer = new ComputeBuffer(_count, 32);
         buffer.SetData(_boidsData);
